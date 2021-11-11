@@ -1,0 +1,26 @@
+server :
+  port : 8080
+  
+spring :
+  application :
+    name: gateway
+  cloud :
+    gateway :
+      default-filters :
+      - PrefixPath=/
+      routes :
+      # ==========
+      - id : flashcard
+        uri : lb://flashcard #http://localhost:8081
+        predicates : 
+        - Path=/flashcard/**
+        filters:
+        - name: CircuitBreaker
+          args:
+            name : flashcard-fallback
+            fallbackUri : forward:/fallback/flashcard
+      # ========
+      - id : quiz
+        uri : lb://quiz #http://localhost:8082
+        predicates :
+        - Path=/quiz/**
